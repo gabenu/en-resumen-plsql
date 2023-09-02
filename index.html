@@ -1,0 +1,48 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>En Resumen PL/SQL</title>
+    <style>
+      header>h1 {
+        color: Blue;
+        font-family: Arial, sans-serif:
+        font-size: 24px
+      }
+      code {
+        background-color: light-gray;
+      }
+    </style>
+</head>
+<body>
+    <header id="portada">
+      <h1>En Resumen: PL/SQL</h1>
+      <h2>Notas de estudio</h2>
+    </header>
+    <main>
+      <section class="contenido" id="contenido">
+        <ol>
+          <li><a href="descripcionGeneral"></a></li>
+        </ol>
+      </section>
+      <section class="seccion" id="descripcionGeneral">
+        <article>
+          <h2>Descripción General</h2>
+          <p>Un bloque anónimo. Es código que, no se guarda como objeto de la base, carece de nombre</p>
+          <code>
+            <pre>
+DECLARE -- Es la sección donde declaramos las variables  
+  miVariable VARCHAR2(10)
+BEGIN -- Esta sección termina en END, aquí escribimos código ejecutable
+  miVariable := 'Hola mundo!';
+  DBMS_OUTPUT.PUT_LINE(miVariable);
+END
+/
+            </pre>
+          </code>
+        </article>
+      </section>
+    </main>  
+</body>
+</html>
