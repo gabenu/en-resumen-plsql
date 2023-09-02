@@ -5,13 +5,13 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>En Resumen PL/SQL</title>
     <style>
-      header>h1 {
+      header > h1 {
         color: Blue;
-        font-family: Arial, sans-serif:
-        font-size: 24px
+        font-family: Arial, sans-serif;
+        font-size: 32px;
       }
-      code {
-        background-color: light-gray;
+      ol ol{
+        list-style-type: lower-roman;
       }
     </style>
 </head>
@@ -23,24 +23,106 @@
     <main>
       <section class="contenido" id="contenido">
         <ol>
-          <li><a href="descripcionGeneral">Descripción General</a></li>
+          <li><a href="#lobasico">Lo básico</a>
+            <ol>
+              <li><a href="#unbloqueanonimo">Un bloque anónimo</a></li>
+              <li><a href="#bloquesanidadosyetiquetas">Un bloque anidado y etiquetas</a></li>
+              <li><a href="#controlif">Control IF THEN ELSIF END IF;</a></li>
+              <li><a href="#loops">Loops</a></li>
+            </ol>
+          </li>
         </ol>
       </section>
       <section class="seccion" id="descripcionGeneral">
         <article>
-          <h2>Descripción General</h2>
-          <p>Un bloque anónimo. Es código que, no se guarda como objeto de la base, carece de nombre, por lo que no puede ser llamado</p>
-          <code>
-            <pre>
-DECLARE -- Es la sección donde declaramos las variables  
-  miVariable VARCHAR2(10)
-BEGIN -- Esta sección termina en END, aquí escribimos código ejecutable
-  miVariable := 'Hola mundo!';
-  DBMS_OUTPUT.PUT_LINE(miVariable);
-END
+          <h2 id="lobasico">Lo básico</h2>
+          <p id="unbloqueanonimo">Bloque anónimo. No se guarda como objeto de la base de datos.<br>
+          Se puede guardar como archivo y ejecutar con SQLPlus <br>
+          <code>sqlplus usuario/password@nombrebasededatos @directorio/nombrescript.sql</code>
+          </p>
+            <code>
+              <pre>
+DECLARE -- Es la sección donde declaramos las variables, esta sección es opcional
+
+  miVariable VARCHAR2(20); -- nombreVariable TIPODEDATO; -- finaliza con ";"
+
+BEGIN -- Esta sección termina en END; aquí escribimos código ejecutable
+
+  miVariable := `Hola mundo!`;
+  DBMS_OUTPUT.PUT_LINE(miVariable); -- Hola mundo!
+
+END;
 /
-            </pre>
-          </code>
+              </pre>
+            </code>
+          <p id="bloquesanidadosyetiquetas">Puede haber bloques de código anidados<br>
+          Para usar variables del scope superior colocamos una etiqueta
+            <code>
+              <pre>
+<&lt;fuera>> -- Esta es una etiqueta
+DECLARE
+  varExterior VARCHAR2(10); 
+BEGIN
+  varExterior := `Hola `;
+  DECLARE
+    varInterior VARCHAR2(10);
+  BEGIN
+    varInterior := `mundo!`
+    -- varExterior es inaccesible a menos que la llamemos por su etiqueta
+    DBMS_OUTPUT.PUT_LINE(fuera.varExterior || varInterior); -- Hola mundo!
+  END;
+END fuera;
+/
+              </pre>
+            </code>
+          </p>
+          <p id="controlif">
+            <b>Control IF THEN ELSIF END IF;</b>
+              <code>
+                <pre>
+DECLARE
+  isET BOOLEAN := TRUE; 
+BEGIN
+  IF isET = TRUE THEN
+    DBMS_OUTPUT.PUT_LINE(`Hi there!`); -- Hi there!
+  ELSE
+    DBMS_OUTPUT.PUT_LINE(`Hola mundo!`); -- Hola mundo!
+  END IF;
+END;
+/
+                </pre>
+            </code>
+          </p>
+          <p id="loops">
+            <b>LOOP</b>
+            <code>
+              <pre>
+DECLARE
+  i NUMBER(1) := 0;
+BEGIN
+LOOP
+  EXIT WHEN i = 3
+  DBMS_OUTPUT.PUT_LINE(TO_CHAR(i));
+  i := i + 1;
+END LOOP;
+END;
+/
+              </pre>
+            </code>
+            <b>FOR LOOP</b>
+            <code>
+              <pre>
+DECLARE
+  i NUMBER(1) := 0;
+BEGIN
+  FOR i IN 1..3 LOOP
+    DBMS_OUTPUT.PUT_LINE(TO_CHAR(i));
+  END LOOP;
+END;
+/
+              </pre>
+            </code>
+          </p>
         </article>
       </section>
     </main>  
