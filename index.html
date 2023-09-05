@@ -5,18 +5,37 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>En Resumen PL/SQL</title>
     <style>
+      body {
+        background-color: gainsboro;
+      }
+      header, main, footer {
+        background-color: white;
+        width: 600px;
+        margin: 0 auto;
+        padding: 1rem;
+      }
+      header {
+        text-align: center;
+      }
       header > h1 {
         color: Blue;
-        font-family: Arial, sans-serif;
+        font-family: Arial, Helvetica, sans-serif;
         font-size: 32px;
       }
       ol ol{
         list-style-type: lower-roman;
       }
+      b {
+        font-weight: bold;
+        font-size: 13px;
+        font-family: Arial, Helvetica, sans-serif;
+        color: blue;
+      }
     </style>
 </head>
 <body>
     <header id="portada">
+      <h3><i>El Código Se Explica Solo - Miniseries</i></h3>
       <h1>En Resumen: PL/SQL</h1>
       <h2>Notas de estudio</h2>
     </header>
@@ -28,7 +47,15 @@
               <li><a href="#unbloqueanonimo">Un bloque anónimo</a></li>
               <li><a href="#bloquesanidadosyetiquetas">Un bloque anidado y etiquetas</a></li>
               <li><a href="#controlif">Control IF THEN ELSIF END IF;</a></li>
+              <li><a href="#controlcase">Control CASE</a></li>
               <li><a href="#loops">Loops</a></li>
+              <li><a href="#excepciones">Excepciones</a></li>
+            </ol>
+          </li>
+          <li><a href="#unpocomasdebase">Un poco más de base</a>
+            <ol>
+              <li><a href="#typeisnullynotnull">%TYPE, IS NULL y NOT NULL </a></li>
+              <li><a href="#rowtype">%ROWTYPE </a></li>
             </ol>
           </li>
         </ol>
@@ -36,30 +63,38 @@
       <section class="seccion" id="descripcionGeneral">
         <article>
           <h2 id="lobasico">Lo básico</h2>
-          <p id="unbloqueanonimo">Bloque anónimo. No se guarda como objeto de la base de datos.<br>
-          Se puede guardar como archivo y ejecutar con SQLPlus <br>
-          <code>sqlplus usuario/password@nombrebasededatos @directorio/nombrescript.sql</code>
+          <p id="unbloqueanonimo">
+          <b>Bloque anónimo</b>
+          <code>
+            <pre>
+-- No se guarda como objeto de la base de datos.
+-- Se puede guardar como archivo y ejecutar con SQLPlus
+sqlplus usuario/password@nombrebasededatos @directorio/nombrescript.sql
+            </pre>
+          </code>
           </p>
             <code>
               <pre>
-DECLARE -- Es la sección donde declaramos las variables, esta sección es opcional
+DECLARE -- Declaramos las variables aqui, esta sección es opcional
 
-  miVariable VARCHAR2(20); -- nombreVariable TIPODEDATO; -- finaliza con ";"
+  miVariable VARCHAR2(20); -- nombreVariable TIPODEDATO;
 
 BEGIN -- Esta sección termina en END; aquí escribimos código ejecutable
 
-  miVariable := `Hola mundo!`;
+  miVariable := `Hola mundo!`; -- atencion a codigo con ";" final
   DBMS_OUTPUT.PUT_LINE(miVariable); -- Hola mundo!
 
 END;
 /
               </pre>
             </code>
-          <p id="bloquesanidadosyetiquetas">Puede haber bloques de código anidados<br>
-          Para usar variables del scope superior colocamos una etiqueta
+          <p id="bloquesanidadosyetiquetas">
+          <b>Bloque anidado y etiquetas</b>
             <code>
               <pre>
-<&lt;fuera>> -- Esta es una etiqueta
+-- Para usar variables del scope superior colocamos una etiqueta
+
+&lt;&lt;fuera>> -- Esta es una etiqueta
 DECLARE
   varExterior VARCHAR2(10); 
 BEGIN
@@ -93,18 +128,37 @@ END;
                 </pre>
             </code>
           </p>
-          <p id="loops">
+          <p id="controlcase">
+            <b>Control CASE</b>
+              <code>
+                <pre>
+DECLARE
+  planeta CHAR(10) := `Naboo`;
+  mensaje VARCHAR2(20);
+BEGIN
+  mensaje :=
+  CASE planeta
+    WHEN `Tierra` THEN `Hola terricolas!`
+    WHEN `Naboo` THEN `Hola Nabooianos!`     
+    ELSE `No existe ese planeta`
+  END;
+END;
+                </pre>
+            </code>
+          </p>
+          <h3 id="loops">Loops</h3>
+          <p>
             <b>LOOP</b>
             <code>
               <pre>
 DECLARE
   i NUMBER(1) := 0;
 BEGIN
-LOOP
-  EXIT WHEN i = 3
-  DBMS_OUTPUT.PUT_LINE(TO_CHAR(i));
-  i := i + 1;
-END LOOP;
+  LOOP
+    EXIT WHEN i = 3
+    DBMS_OUTPUT.PUT_LINE(TO_CHAR(i));
+    i := i + 1;
+  END LOOP;
 END;
 /
               </pre>
@@ -118,6 +172,106 @@ BEGIN
   FOR i IN 1..3 LOOP
     DBMS_OUTPUT.PUT_LINE(TO_CHAR(i));
   END LOOP;
+END;
+/
+              </pre>
+            </code>
+            <b>WHILE LOOP</b>
+            <code>
+              <pre>
+DECLARE
+  i NUMBER(1) := 0;
+BEGIN
+  WHILE i &lt; 3 LOOP
+    DBMS_OUTPUT.PUT_LINE(TO_CHAR(i));
+    i := i + 1;
+  END LOOP;
+END;
+/
+              </pre>
+            </code>
+            <b>GOTO</b>
+            <code>
+              <pre>
+BEGIN
+  ...
+  GOTO sigueaqui;
+  ...
+  &lt;&lt;sigueaqui>>
+  DBMS_OUTPUT.PUT_LINE(`salto de n lineas`);
+END;
+/
+              </pre>
+            </code>
+          </p>
+          <h3 id="excepciones">Excepciones</h3>
+          <p>
+            <code>
+              <pre>
+DECLARE
+  excepcion EXCEPTION;
+BEGIN
+  SELECT null FROM dual;
+  IF SQL%NOTFOUND THEN
+    RAISE excepcion;
+  END IF;
+  DBMS_OUTPUT.PUT_LINE(`Esta linea no es alcanzada`);
+  EXCEPTION
+    WHEN excepcion THEN
+      DBMS_OUTPUT.PUT_LINE(`Ha ocurrido la excepcion "excepcion"`);
+END;
+/
+              </pre>
+            </code>
+            <b>PRAGMA exception_init()</b>
+            <code>
+              <pre>
+DECLARE
+  e1 EXCEPTION;
+  PRAGMA exception_init(e1, -20001);
+BEGIN
+  SELECT null FROM dual;
+  IF SQL%NOTFOUND THEN
+    raise_application_error(-20001, `Ha ocurrido la excepcion "e1"`);
+  ELSIF SQL%FOUND
+    DBMS_OUTPUT.PUT_LINE(`Esta linea no es alcanzada`);
+  END IF;
+  DBMS_OUTPUT.PUT_LINE(`Esta linea no es alcanzada tampoco`);
+  EXCEPTION
+    WHEN OTHERS THEN
+      DBMS_OUTPUT.PUT_LINE(`Ha ocurrido una excepcion generica`);
+END;
+/
+              </pre>
+            </code>
+          </p>
+          <h3 id="unpocomasdebase">Un poco más de base</h3>
+          <p>
+            <b id="typeisnullynotnull">%TYPE, IS NULL y NOT NULL</b>
+            <code>
+              <pre>
+DECLARE
+  -- Hay que inicializar cuando usamos NOT NULL, atento al ejemplo:
+  variable tabla.campo%TYPE NOT NULL := `Tipo VARCHAR2`;
+BEGIN
+  variable := NULL; -- Aceptado
+  IF variable IS NULL THEN -- Atencion a IS NULL
+    DBMS_OUTPUT.PUT_LINE(`La variable "variable" es Nula`);
+  END IF;
+END;
+/
+              </pre>
+            </code>
+            <b id="rowtype">%ROWTYPE</b>
+            <code>
+              <pre>
+DECLARE
+  variable tabla%ROWTYPE;
+BEGIN
+  variable.campo1 := 'Contenido 1';
+  variable.campo2 := 'contenido 2';
+  -- ...
+  variable.ultimocampo := NULL 
 END;
 /
               </pre>
